@@ -294,11 +294,11 @@ a:hover {
 }
 
 @media (max-width: 1200px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 @media (max-width: 600px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr !important; }
 }
 
 .stat-card {
@@ -2016,7 +2016,7 @@ a.chat-btn:hover,
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(5,217,232,0.2);
 }
 .autocomplete-item { transition: all 0.2s; }
-.autocomplete-item:hover { background: rgba(5,217,232,0.1); box-shadow: inset 5px 0 0 var(--cyan); }
+.autocomplete-item:hover { background: rgba(5, 217, 232, 0.1); box-shadow: inset 5px 0 0 var(--cyan); }
 
 /* ── REPORT LOGS REDESIGN ── */
 .report-logs-v3 {
@@ -2736,9 +2736,7 @@ img { max-width: 100%; height: auto; }
   .college-hero h1 { font-size: 22px !important; }
 }
 
-/* ══════════════════════════════════════════
-   SMALL MOBILE — max-width: 480px
-   ══════════════════════════════════════════ */
+/* ─── SMALL MOBILE — max-width: 480px ─── */
 @media (max-width: 480px) {
 
   /* Page title */

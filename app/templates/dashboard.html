@@ -24,47 +24,64 @@
         </div>
       </div>
 
-      <!-- Stats Matrix (Full Width) -->
-      <div class="stats-grid holographic-stats" id="statsGrid">
-        <div class="stat-card" onclick="window.location.href='/explore'">
-          <div class="stat-icon glow-icon">🎪</div>
-          <div class="stat-value" id="stat-events">{{ campus_events_count | default(0, true) }}</div>
-          <div class="stat-label">Campus Events</div>
+      <!-- Stats Matrix (Full Width) - FORCED GRID FALLBACK -->
+      <div class="stats-grid holographic-stats" id="statsGrid" 
+           style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 16px !important; margin-bottom: 32px !important; width: 100% !important;">
+        
+        <div class="stat-card" onclick="window.location.href='/explore'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">🎪</div>
+          <div class="stat-value" id="stat-events" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ campus_events_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Campus Events</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/opportunities'">
-          <div class="stat-icon glow-icon">💼</div>
-          <div class="stat-value" id="stat-opportunities">{{ opportunities_count | default(0, true) }}</div>
-          <div class="stat-label">Opportunities</div>
+
+        <div class="stat-card" onclick="window.location.href='/opportunities'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">💼</div>
+          <div class="stat-value" id="stat-opportunities" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ opportunities_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Opportunities</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/community'">
-          <div class="stat-icon glow-icon">💬</div>
-          <div class="stat-value" id="stat-posts">{{ community_posts_count | default(0, true) }}</div>
-          <div class="stat-label">Community Posts</div>
+
+        <div class="stat-card" onclick="window.location.href='/community'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">💬</div>
+          <div class="stat-value" id="stat-posts" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ community_posts_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Community Posts</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/notifications'">
-          <div class="stat-icon glow-icon">🔔</div>
-          <div class="stat-value" id="stat-notifications">{{ notifications_count | default(0, true) }}</div>
-          <div class="stat-label">Notifications</div>
+
+        <div class="stat-card" onclick="window.location.href='/notifications'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">🔔</div>
+          <div class="stat-value" id="stat-notifications" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ notifications_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Notifications</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/study-groups'">
-          <div class="stat-icon glow-icon">👥</div>
-          <div class="stat-value" id="stat-groups">{{ study_groups_count | default(0, true) }}</div>
-          <div class="stat-label">Synapse Society</div>
+
+        <div class="stat-card" onclick="window.location.href='/study-groups'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">👥</div>
+          <div class="stat-value" id="stat-groups" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ study_groups_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Synapse Society</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/bookmarks'">
-          <div class="stat-icon glow-icon">🔖</div>
-          <div class="stat-value" id="stat-saved">{{ saved_items_count | default(0, true) }}</div>
-          <div class="stat-label">Saved Items</div>
+
+        <div class="stat-card" onclick="window.location.href='/bookmarks'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">🔖</div>
+          <div class="stat-value" id="stat-saved" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ saved_items_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Saved Items</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/colleges'">
-          <div class="stat-icon glow-icon">🏛️</div>
-          <div class="stat-value" id="stat-communities">{{ communities_count | default(0, true) }}</div>
-          <div class="stat-label">Communities</div>
+
+        <div class="stat-card" onclick="window.location.href='/colleges'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">🏛️</div>
+          <div class="stat-value" id="stat-communities" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ communities_count | default(0, true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Communities</div>
         </div>
-        <div class="stat-card" onclick="window.location.href='/leaderboard'">
-          <div class="stat-icon glow-icon">🏆</div>
-          <div class="stat-value" id="stat-rank">{{ leaderboard_rank | default('Unranked', true) }}</div>
-          <div class="stat-label">Leaderboard</div>
+
+        <div class="stat-card" onclick="window.location.href='/leaderboard'" 
+             style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; min-height: 140px !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; cursor: pointer !important;">
+          <div class="stat-icon glow-icon" style="font-size: 28px !important; margin-bottom: 8px !important;">🏆</div>
+          <div class="stat-value" id="stat-rank" style="font-size: 24px !important; font-weight: 800 !important; color: #fff !important; font-family: 'Rajdhani', sans-serif !important;">{{ leaderboard_rank | default('Unranked', true) }}</div>
+          <div class="stat-label" style="font-size: 11px !important; color: #6a9ab5 !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-weight: 600 !important;">Leaderboard</div>
         </div>
       </div>
 
@@ -299,6 +316,14 @@
   .content-type-opportunity { background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); color: #6c63ff; }
   .content-type-event       { background: rgba(78,204,163,0.12); border: 1px solid rgba(78,204,163,0.3); color: #4ecca3; }
   .content-type-post        { background: rgba(255,107,157,0.12); border: 1px solid rgba(255,107,157,0.3); color: #ff6b9d; }
+
+  /* Responsive Grid Overrides for Forced Fallback */
+  @media (max-width: 1024px) {
+    #statsGrid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @media (max-width: 600px) {
+    #statsGrid { grid-template-columns: 1fr !important; }
+  }
 </style>
 {% endblock %}
 
