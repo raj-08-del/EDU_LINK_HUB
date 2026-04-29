@@ -18,7 +18,7 @@
         <button id="btnTriggerCollect" class="btn btn-primary" onclick="triggerAutoCollect()" style="padding:10px 20px; font-weight:700; border-radius:12px; background:linear-gradient(135deg, #05d9e8, #ff2a6d); color:#fff; border:none; box-shadow:0 0 15px rgba(5,217,232,0.4);">🤖 Run Auto Collector</button>
       </div>
 
-      <!-- Stats -->
+      <!-- Stats Matrix (Full Width) -->
       <div class="stats-grid" id="adminStats">
         <div class="stat-card" onclick="document.getElementById('usersContainer').scrollIntoView({behavior: 'smooth'})">
           <div class="stat-icon">👥</div>
@@ -29,18 +29,18 @@
           <div class="stat-icon">🎪</div>
           <div class="stat-value" id="a_events">0</div>
           <div class="stat-label">Events</div>
-          <div style="font-size:11px; color:#05d9e8; margin-top:4px;" id="a_auto_events">🤖 0 Auto</div>
+          <div style="font-size:10px; color:var(--accent); margin-top:4px;" id="a_auto_events">🤖 0 Auto</div>
         </div>
         <div class="stat-card" onclick="window.location.href='/opportunities'">
           <div class="stat-icon">💼</div>
           <div class="stat-value" id="a_opps">0</div>
           <div class="stat-label">Opportunities</div>
-          <div style="font-size:11px; color:#05d9e8; margin-top:4px;" id="a_auto_opps">🤖 0 Auto</div>
+          <div style="font-size:10px; color:var(--accent); margin-top:4px;" id="a_auto_opps">🤖 0 Auto</div>
         </div>
-        <div class="stat-card stat-card--pending" onclick="window.location.href='/moderate'">
+        <div class="stat-card" style="background:rgba(255,165,0,0.05); border-color:rgba(255,165,0,0.2);" onclick="window.location.href='/moderate'">
           <div class="stat-icon">⏳</div>
           <div class="stat-value" id="a_pending" style="color:orange;">0</div>
-          <div class="stat-label">Pending Review (Click to view)</div>
+          <div class="stat-label">Pending Review</div>
         </div>
       </div>
 

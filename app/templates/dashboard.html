@@ -115,7 +115,9 @@
           </div>
           <div class="glow-line" style="width: 60px; margin-bottom: 24px;"></div>
           <div class="cards-grid holographic-events-grid" id="recentEvents" style="display: flex; flex-direction: column; gap: 16px;">
-            <div class="spinner"></div>
+            <div style="text-align: center; padding: 20px;">
+              <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
           </div>
         </div>
         <div class="opps-col">
@@ -124,7 +126,9 @@
           </div>
           <div class="glow-line" style="width: 60px; margin-bottom: 24px;"></div>
           <div class="side-cards-list" id="recentOpps" style="display: flex; flex-direction: column; gap: 16px;">
-            <div class="spinner"></div>
+            <div style="text-align: center; padding: 20px;">
+              <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -392,14 +396,14 @@
   async function loadFeeds() {
     try {
       const [events, opps] = await Promise.all([
-        apiFetch('/api/events?sort=newest'),
-        apiFetch('/api/opportunities?sort=newest')
+        apiFetch('/api/events/?sort=newest'),
+        apiFetch('/api/opportunities/?sort=newest')
       ]);
 
       const evContainer = document.getElementById('recentEvents');
       if (evContainer) {
-        evContainer.innerHTML = (events && events.length) 
-          ? events.slice(0, 3).map(e => `
+        if (events && Array.isArray(events) && events.length > 0) {
+          evContainer.innerHTML = events.slice(0, 3).map(e => `
             <div class="card" onclick="window.location.href='/explore'">
               <div class="card-header">
                 <div class="card-title">${escapeHtml(e.title)}</div>
@@ -417,14 +421,16 @@
               ` : ''}
               <div class="card-description">${escapeHtml(e.description)}</div>
             </div>
-          `).join('')
-          : '<div class="empty-state">No events found</div>';
+          `).join('');
+        } else {
+          evContainer.innerHTML = '<div class="empty-state" style="text-align:center; padding:20px; color:#888;">No upcoming events found</div>';
+        }
       }
 
       const oppContainer = document.getElementById('recentOpps');
       if (oppContainer) {
-        oppContainer.innerHTML = (opps && opps.length)
-          ? opps.slice(0, 4).map(o => `
+        if (opps && Array.isArray(opps) && opps.length > 0) {
+          oppContainer.innerHTML = opps.slice(0, 4).map(o => `
             <div class="holographic-side-card" onclick="window.location.href='/opportunities'">
               <div class="hsc-header"><div class="hsc-title">${escapeHtml(o.company)} — ${escapeHtml(o.role)}</div></div>
               <div class="hsc-meta">
@@ -438,10 +444,21 @@
                 </div>
               ` : ''}
             </div>
-          `).join('')
-          : '<div class="empty-state">No opportunities found</div>';
+          `).join('');
+        } else {
+          oppContainer.innerHTML = '<div class="empty-state" style="text-align:center; padding:20px; color:#888;">No opportunities found</div>';
+        }
       }
-    } catch(err) { console.error(err); }
+    } catch(err) { 
+      console.error('Feed Loading Failed:', err);
+      // Remove spinners even on error
+      ['recentEvents', 'recentOpps'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.querySelector('.spinner')) {
+          el.innerHTML = '<div class="error-state" style="text-align:center; padding:20px; color:#ff4757;">Failed to load feed</div>';
+        }
+      });
+    }
   }
 
   // --- GROUPED REPORT LOGS LOGIC ---
@@ -717,6 +734,7 @@
 
 
   loadFeeds(); updateGlobalStats();
+  setInterval(loadFeeds, 15000); // Pulse feeds every 15 secs
   setInterval(updateGlobalStats, 30000);
 </script>
 {% endblock %}
