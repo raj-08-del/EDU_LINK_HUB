@@ -421,8 +421,8 @@
   async function loadFeeds() {
     try {
       const [events, opps] = await Promise.all([
-        apiFetch('/api/events/?sort=newest'),
-        apiFetch('/api/opportunities/?sort=newest')
+        apiFetch('/api/events?sort=newest'),
+        apiFetch('/api/opportunities?sort=newest')
       ]);
 
       const evContainer = document.getElementById('recentEvents');
@@ -479,12 +479,13 @@
       // Remove spinners even on error
       ['recentEvents', 'recentOpps'].forEach(id => {
         const el = document.getElementById(id);
-        if (el && el.querySelector('.spinner')) {
-          el.innerHTML = '<div class="error-state" style="text-align:center; padding:20px; color:#ff4757;">Failed to load feed</div>';
+        if (el) {
+          el.innerHTML = `<div class="error-state" style="text-align:center; padding:20px; color:#ff4757;">Failed to load feed: ${err.message || 'Server error'}</div>`;
         }
       });
     }
   }
+
 
   // --- GROUPED REPORT LOGS LOGIC ---
   

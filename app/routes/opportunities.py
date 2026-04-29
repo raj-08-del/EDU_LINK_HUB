@@ -138,8 +138,8 @@ def get_opportunities():
 
         return jsonify(serialize_doc(opps)), 200
     except Exception as e:
-        logging.error(traceback.format_exc())
-        return jsonify({'error': str(e)}), 500
+        logging.error(f"ERROR in get_opportunities: {str(e)}")
+        return jsonify({'error': f"Internal Server Error: {str(e)}"}), 500
 
 
 @opportunities_bp.route('/pending', methods=['GET'])

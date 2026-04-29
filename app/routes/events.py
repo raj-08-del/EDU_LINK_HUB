@@ -9,6 +9,7 @@ import os
 from werkzeug.utils import secure_filename
 import traceback
 from flask import current_app
+import logging
 
 events_bp = Blueprint('events', __name__)
 
@@ -19,6 +20,9 @@ CATEGORIES = ['workshop', 'technical', 'non-technical', 'hackathon', 'festival']
 @jwt_required(optional=True)
 def get_events():
     try:
+        if mongo.db is None:
+            return jsonify({"error": "Database connection unavailable"}), 503
+            
         category = request.args.get('category')
         search = request.args.get('search')
         sort = request.args.get('sort', 'newest')
@@ -76,8 +80,8 @@ def get_events():
 
         return jsonify(serialize_doc(events))
     except Exception as e:
-        print(f"ERROR in get_events: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        logging.error(f"ERROR in get_events: {str(e)}")
+        return jsonify({'error': f"Internal Server Error: {str(e)}"}), 500
 
 
 @events_bp.route('/hidden', methods=['GET'])
