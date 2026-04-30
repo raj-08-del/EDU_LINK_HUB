@@ -550,13 +550,22 @@
             <div class="dashboard-card opp-card" onclick="window.location.href='/opportunities'">
               <div class="opp-title-row">
                 <span class="opp-title line-clamp-1">${escapeHtml(o.company)} — ${escapeHtml(o.role)}</span>
-                <span class="opp-location">📍 ${escapeHtml(o.location)}</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px;">
                 <span class="badge-pill badge-${o.category}">${o.category}</span>
+              </div>
+              <div class="event-meta-row" style="margin: 4px 0;">
+                <span class="opp-location">📍 ${escapeHtml(o.location)}</span>
+                ${o.deadline ? `<span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">📅 ${escapeHtml(o.deadline)}</span>` : ''}
+              </div>
+              ${o.description ? `
+                <p class="event-description line-clamp-2" style="font-size: 0.8rem; margin: 4px 0 8px;">
+                  ${escapeHtml(o.description)}
+                </p>
+              ` : ''}
+              <div style="display:flex; align-items:center; gap:8px; margin-top: auto;">
                 ${userData && userData.role === 'admin' && o.creator_name ? `
                   <span style="font-size:9px; color:#05d9e8; font-weight:600;">👤 ${escapeHtml(o.creator_name)}</span>
                 ` : ''}
+                ${o.source ? `<span style="font-size:9px; color:rgba(255,255,255,0.3); margin-left: auto;">via ${escapeHtml(o.source)}</span>` : ''}
               </div>
             </div>
           `).join('');
