@@ -57,6 +57,15 @@
     .btn-opp-cancel { background: transparent; border: 1px solid #444; color: #888; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
     .btn-opp-submit { background: #6c63ff; border: none; color: #fff; font-weight: 700; padding: 10px 25px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
     .btn-opp-submit:hover { background: #5a52e0; }
+
+    /* Banner Dynamic Classes */
+    .banner-job { background: var(--grad-job); }
+    .banner-internship { background: var(--grad-internship); }
+    .banner-campus-placement { background: var(--grad-campus); }
+    .banner-skill-based { background: var(--grad-skill); }
+    .banner-remote { background: var(--grad-remote); }
+    .banner-hackathon { background: var(--grad-hackathon); }
+    .banner-event { background: var(--grad-event); }
 </style>
 {% endblock %}
 
@@ -113,7 +122,7 @@
             {% set banner_grad = 'var(--grad-remote)' if is_remote else 'var(--grad-' ~ (type or 'job') ~ ')' %}
             
             <div class="opp-card opportunity-card" data-id="{{ opp._id }}">
-                <div class="card-banner" style="background: {{ banner_grad }};">
+                <div class="card-banner banner-{{ 'remote' if is_remote else type or 'job' }}">
                     {% if opp.image %}
                         <img src="{{ opp.image }}" alt="{{ opp.company }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     {% endif %}
