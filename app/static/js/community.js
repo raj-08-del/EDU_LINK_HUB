@@ -8,7 +8,6 @@ let currentSort = 'newest';
 let currentPage = 1;
 let currentSearch = '';
 let currentTag = '';
-let userBookmarkIds = new Set();
 let searchTimeout = null;
 
 // Initial Setup
@@ -34,7 +33,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 3. Initial Post Load
+    // 3. Global Event Delegation for 3-Dot Menus
+    document.addEventListener('click', (e) => {
+        const dotBtn = e.target.closest('.post-three-dot');
+        const dropdown = e.target.closest('.dropdown-menu');
+
+        // Toggle dropdown on dot click
+        if (dotBtn) {
+            e.stopPropagation();
+            const postId = dotBtn.dataset.id;
+            const menu = document.getElementById(`menu-${postId}`);
+            
+            // Close all other menus
+            document.querySelectorAll('.dropdown-menu.active').forEach(m => {
+                if (m !== menu) m.classList.remove('active');
+            });
+
+            if (menu) menu.classList.toggle('active');
+            return;
+        }
+
+        // Close all menus if clicking outside
+        if (!dropdown) {
+            document.querySelectorAll('.dropdown-menu.active').forEach(m => m.classList.remove('active'));
+        }
+    });
+
+    // 4. Initial Post Load
     await loadPosts();
 });
 
@@ -159,26 +184,27 @@ function renderPostCard(post, authUserId) {
 
     return `
       <div class="post-card" data-post-id="${postId}">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <!-- Action Menu -->
+        <div class="post-actions-wrapper">
+          <button class="post-three-dot" data-id="${postId}">⋮</button>
+          <ul class="dropdown-menu" id="menu-${postId}">
+            <li onclick="bookmarkPost('${postId}')">🔖 Bookmark Post</li>
+            <li onclick="sharePost('${postId}', '${escapeHtml(post.title)}')">🔗 Share Post</li>
+            ${canManage ? `
+              <li onclick="editPost('${postId}')">✏️ Edit Post</li>
+              <li onclick="hidePost('${postId}')" class="warning-item">👁️ Hide Post</li>
+              <li onclick="deletePost('${postId}')" class="danger-item">🗑️ Delete Post</li>
+            ` : ''}
+            <li onclick="reportContent('${postId}')">🚩 Report</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom:12px;">
           <span style="background:rgba(255,42,109,0.15); border:1px solid rgba(255,42,109,0.4);
             color:#ff2a6d; padding:3px 12px; border-radius:20px; font-size:11px; font-weight:700;
             text-transform:uppercase; letter-spacing:0.06em;">
             ${postType}
           </span>
-            <button class="post-three-dot" data-id="${postId}"
-              style="background:none;border:none;color:#555;cursor:pointer;
-              font-size:18px;padding:4px 8px;border-radius:4px;"
-              onclick="event.stopPropagation(); toggleMenu('${postId}')">⋮</button>
-            <ul class="dropdown-menu" id="menu-${postId}">
-              <li onclick="bookmarkPost('${postId}')">🔖 Bookmark Post</li>
-              <li onclick="sharePost('${postId}', '${escapeHtml(post.title)}')">🔗 Share Post</li>
-              ${canManage ? `
-                <li onclick="editPost('${postId}')">✏️ Edit Post</li>
-                <li onclick="hidePost('${postId}')" class="warning-item">👁️ Hide Post</li>
-                <li onclick="deletePost('${postId}')" class="danger-item">🗑️ Delete Post</li>
-              ` : ''}
-              <li onclick="reportContent('${postId}')">🚩 Report</li>
-            </ul>
         </div>
 
         <h3 style="color:#fff; font-family:'Rajdhani',sans-serif; font-size:19px;
@@ -216,7 +242,7 @@ function renderPostCard(post, authUserId) {
             🗨️ ${post.reply_count || 0} Replies
           </button>
 
-          <span style="color:#555; font-size:12px; margin-left:auto; display:flex; flex-direction:column; align-items:flex-end;">
+          <span style="color:#555; font-size:11px; margin-left:auto; display:flex; flex-direction:column; align-items:flex-end;">
             ${formattedDate}
             ${isAdmin && post.author_name ? `<span style="font-size:10px; color:#05d9e8; font-weight:600;">👤 ${escapeHtml(post.author_name)} <span style="background:rgba(255,71,87,0.15);color:#ff4757;border:1px solid rgba(255,71,87,0.3);border-radius:3px;padding:0 4px;font-size:9px;">ADMIN</span></span>` : ''}
           </span>
@@ -329,7 +355,6 @@ window.openModal = function(id) {
     const el = document.getElementById(id);
     if (el) {
         el.style.display = 'flex';
-        // Add .show for animation compatibility
         setTimeout(() => el.classList.add('show'), 10);
     }
 };
@@ -343,21 +368,6 @@ window.closeModal = function(id) {
         }, 300);
     }
 };
-
-function toggleMenu(id) {
-    const menu = document.getElementById(`menu-${id}`);
-    if (!menu) return;
-    const isOpen = menu.classList.contains('open');
-    document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
-    if (!isOpen) menu.classList.add('open');
-}
-
-// Global click listener to close menus
-document.addEventListener('click', e => {
-    if (!e.target.closest('.dropdown-menu') && !e.target.closest('.post-three-dot')) {
-        document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
-    }
-});
 
 // Helper: Escape HTML
 function escapeHtml(text) {
