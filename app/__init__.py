@@ -39,57 +39,46 @@ def create_app():
 
 
     # Configuration
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
-    app.config['MONGO_URI'] = os.getenv(
-        'MONGO_URI',
-        'mongodb://127.0.0.1:27017/edu_link_hub'
-        '?serverSelectionTimeoutMS=5000'
-        '&connectTimeoutMS=5000'
-        '&socketTimeoutMS=10000'
-    )
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'flask_secret_key_change_in_production_2024')
+    
+    # Prioritise Render/Production environment variables
+    mongo_uri = os.environ.get('MONGO_URI')
+    if not mongo_uri:
+        # Fallback to local if not set
+        mongo_uri = 'mongodb://127.0.0.1:27017/edu_link_hub?serverSelectionTimeoutMS=5000'
+        print(">>> WARNING: MONGO_URI not found in environment. Using local fallback.")
+    
+    app.config['MONGO_URI'] = mongo_uri
+    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'edu_link_hub_secret_key_change_in_production_2024')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_SECURE'] = os.getenv('JWT_COOKIE_SECURE', 'False').lower() == 'true'
+    app.config['JWT_COOKIE_SECURE'] = os.environ.get('JWT_COOKIE_SECURE', 'False').lower() == 'true'
     app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
     # Initialize extensions
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Handle Proxy headers (important for Cloudflare Tunnel)
+    # Handle Proxy headers (important for Cloudflare/Render)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
-    # Append fast-timeout params to Atlas URI so DNS failures fail quickly
-    _mongo_uri = app.config['MONGO_URI']
-    if 'mongodb+srv' in _mongo_uri and 'serverSelectionTimeoutMS' not in _mongo_uri:
-        sep = '&' if '?' in _mongo_uri else '?'
-        _mongo_uri += f"{sep}serverSelectionTimeoutMS=8000&connectTimeoutMS=8000"
-        app.config['MONGO_URI'] = _mongo_uri
+    # Append timeout params if missing to prevent hanging
+    if 'serverSelectionTimeoutMS' not in app.config['MONGO_URI']:
+        sep = '&' if '?' in app.config['MONGO_URI'] else '?'
+        app.config['MONGO_URI'] += f"{sep}serverSelectionTimeoutMS=10000&connectTimeoutMS=10000"
 
-    # Try Atlas first — fall back to local MongoDB on any connection/DNS error
-    _local_uri = 'mongodb://127.0.0.1:27017/edu_link_hub?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000'
+    # Initialize PyMongo with the final URI
     try:
         mongo.init_app(app)
-        # Quick DNS pre-check for SRV URIs
-        if 'mongodb+srv' in app.config['MONGO_URI']:
-            import pymongo
-            _test_client = pymongo.MongoClient(
-                app.config['MONGO_URI'],
-                serverSelectionTimeoutMS=8000
-            )
-            _test_client.admin.command('ping')
-            _test_client.close()
-        print(">>> MongoDB Atlas connection initialised")
-    except Exception as _atlas_err:
-        print(f">>> Atlas unavailable ({type(_atlas_err).__name__}). Falling back to local MongoDB...")
-        app.config['MONGO_URI'] = _local_uri
-        # Re-initialise mongo with local URI
-        try:
-            mongo.init_app(app)
-            print(">>> Using local MongoDB (127.0.0.1:27017)")
-        except Exception as _local_err:
-            print(f">>> WARNING: Local MongoDB also failed: {_local_err}")
+        # Verify connection immediately
+        with app.app_context():
+            mongo.db.command('ping')
+        print(f">>> MongoDB connected successfully to: {app.config['MONGO_URI'].split('@')[-1] if '@' in app.config['MONGO_URI'] else 'local'}")
+    except Exception as e:
+        print(f">>> CRITICAL: MongoDB connection failed! Error: {e}")
+        # We don't force a fallback to 127.0.0.1 here because if the provided URI fails, 
+        # the app is likely in a broken state anyway on Render. 
+        # However, we allow the app to start so logs can be inspected.
     jwt.init_app(app)
     bcrypt.init_app(app)
 

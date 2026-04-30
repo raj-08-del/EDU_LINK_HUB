@@ -37,24 +37,37 @@ def get_stats():
         except:
             return 'Resolution Error'
 
-    # ── Basic Stats ──
+    # ── Basic Stats (Wrapped in try/except) ──
+    def safe_count(collection, query={}):
+        try:
+            return collection.count_documents(query)
+        except Exception as e:
+            print(f"[AdminStats] Error counting {collection.name}: {e}")
+            return 0
+
     stats = {
-        'users': mongo.db.users.count_documents({}),
-        'new_users_this_week': mongo.db.users.count_documents({'created_at': {'$gte': last_week}}),
-        'reports': mongo.db.reports.count_documents({}),
-        'pending_reports': mongo.db.reports.count_documents({'status': 'pending'}),
-        'pending_opportunities': mongo.db.opportunities.count_documents({'status': 'pending'}),
-        'events': mongo.db.events.count_documents({}),
-        'opportunities': mongo.db.opportunities.count_documents({}),
-        'auto_events': mongo.db.events.count_documents({'is_auto_collected': True}),
-        'auto_opps': mongo.db.opportunities.count_documents({'is_auto_collected': True}),
-        'community_posts': mongo.db.community_posts.count_documents({}),
-        'chat_messages': mongo.db.chat_messages.count_documents({}),
+        'users': safe_count(mongo.db.users),
+        'new_users_this_week': safe_count(mongo.db.users, {'created_at': {'$gte': last_week}}),
+        'reports': safe_count(mongo.db.reports),
+        'pending_reports': safe_count(mongo.db.reports, {'status': 'pending'}),
+        'pending_opportunities': safe_count(mongo.db.opportunities, {'status': 'pending'}),
+        'events': safe_count(mongo.db.events),
+        'opportunities': safe_count(mongo.db.opportunities),
+        'auto_events': safe_count(mongo.db.events, {'is_auto_collected': True}),
+        'auto_opps': safe_count(mongo.db.opportunities, {'is_auto_collected': True}),
+        'community_posts': safe_count(mongo.db.community_posts),
+        'chat_messages': safe_count(mongo.db.chat_messages),
     }
 
     # ── Role Counts ──
-    pipeline = [{'$group': {'_id': '$role', 'count': {'$sum': 1}}}]
-    role_counts = {r['_id']: r['count'] for r in mongo.db.users.aggregate(pipeline)}
+    try:
+        pipeline = [{'$group': {'_id': '$role', 'count': {'$sum': 1}}}]
+        role_data = list(mongo.db.users.aggregate(pipeline))
+        role_counts = {r['_id']: r['count'] for r in role_data}
+    except Exception as e:
+        print(f"[AdminStats] Error aggregating roles: {e}")
+        role_counts = {}
+
     stats['role_counts'] = {
         'admin': role_counts.get('admin', 0),
         'student': role_counts.get('student', 0),
@@ -62,13 +75,21 @@ def get_stats():
     }
 
     # ── Recent Users ──
-    recent_users = list(mongo.db.users.find({}, {'name': 1, 'avatar': 1, 'role': 1})
-                        .sort('created_at', -1).limit(4))
-    stats['recent_users'] = serialize_doc(recent_users)
+    try:
+        recent_users = list(mongo.db.users.find({}, {'name': 1, 'avatar': 1, 'role': 1, 'created_at': 1})
+                            .sort('created_at', -1).limit(4))
+        stats['recent_users'] = serialize_doc(recent_users)
+    except Exception as e:
+        print(f"[AdminStats] Error fetching recent users: {e}")
+        stats['recent_users'] = []
 
     # ── Pending Reports Logs ──
-    pending_reports = list(mongo.db.reports.find({'status': 'pending'}).sort('createdAt', -1).limit(20))
-    stats['pending_report_logs'] = serialize_doc(pending_reports)
+    try:
+        pending_reports = list(mongo.db.reports.find({'status': 'pending'}).sort('createdAt', -1).limit(20))
+        stats['pending_report_logs'] = serialize_doc(pending_reports)
+    except Exception as e:
+        print(f"[AdminStats] Error fetching pending reports: {e}")
+        stats['pending_report_logs'] = []
 
     return jsonify(stats)
 
