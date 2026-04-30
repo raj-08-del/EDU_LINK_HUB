@@ -19,20 +19,17 @@
         </div>
         
         <div class="community-filter-bar">
-          <!-- Filter tabs -->
           <div class="filter-tabs-group">
             <button id="btn-newest" class="filter-btn active" onclick="setSort('newest')">🟢 Newest</button>
             <button id="btn-popular" class="filter-btn" onclick="setSort('popular')">🔥 Popular</button>
             <button class="filter-btn" onclick="window.location.href='/community/channel/general'">💬 Chat Channels</button>
           </div>
           
-          <!-- Search Wrapper -->
           <div class="community-search-wrapper">
             <span class="search-icon">🔍</span>
             <input type="text" id="community-search" placeholder="Search posts, topics, tags...">
           </div>
           
-          <!-- Ask Button -->
           <button class="btn-ask-question" onclick="openModal('ask-question-modal')">
             + ASK QUESTION
           </button>
@@ -41,51 +38,71 @@
 
       <!-- LAYOUT GRID -->
       <div class="community-layout">
-        <!-- LEFT: POSTS -->
         <div class="community-main">
           <div id="posts-container">
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
           </div>
-          <!-- Pagination -->
           <div class="pagination-container" id="pagination" style="display:none;">
             <button class="btn btn-soft" id="prevPage" onclick="changePage(-1)">← Previous</button>
             <span id="pageInfo"></span>
             <button class="btn btn-soft" id="nextPage" onclick="changePage(1)">Next →</button>
           </div>
         </div>
-        
-        <!-- RIGHT: SIDEBAR -->
         <div class="community-sidebar"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modals -->
+<!-- Modal: Ask a Question -->
 <div class="modal-overlay" id="ask-question-modal">
   <div class="modal-card">
-    <h2 class="modal-title">💬 ASK A QUESTION</h2>
     <button class="btn-close-modal" onclick="closeModal('ask-question-modal')">✕</button>
-    <div class="modal-form-grid">
-      <div class="form-full"><label>POST TITLE</label><input id="q-title" placeholder="e.g. Which programming language is easiest?"></div>
-      <div class="form-full"><label>CONTENT / DESCRIPTION</label><textarea id="q-content" placeholder="Describe your question..."></textarea></div>
-      <div class="form-full">
+    <h2 class="modal-title"><span>💬</span> ASK A QUESTION</h2>
+    
+    <div class="modal-form-content">
+      <div class="form-group">
+        <label>POST TITLE</label>
+        <input id="q-title" placeholder="e.g. Which programming language is easiest?">
+      </div>
+      
+      <div class="form-group">
+        <label>CONTENT / DESCRIPTION</label>
+        <textarea id="q-content" placeholder="Describe your question in detail..."></textarea>
+      </div>
+      
+      <div class="form-group">
         <label>POST TYPE</label>
-        <select id="q-type" onchange="togglePollSection()">
-          <option value="Question">Question</option>
-          <option value="Poll">Poll</option>
-          <option value="Discussion">Discussion</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="q-type" onchange="togglePollSection()">
+            <option value="Question">Question</option>
+            <option value="Poll">Poll</option>
+            <option value="Discussion">Discussion</option>
+          </select>
+        </div>
       </div>
+
+      <!-- POLL SECTION -->
       <div id="poll-section" style="display:none;">
-        <label>POLL QUESTION</label><input id="poll-question" placeholder="Poll question">
-        <label>POLL OPTIONS (MIN 2, MAX 6)</label><div id="poll-options-list"></div>
-        <button type="button" class="btn-add-opt" onclick="addPollOption()">+ Add Option</button>
+        <div class="form-group">
+          <label>POLL QUESTION</label>
+          <input id="poll-question" placeholder="Enter your poll question">
+        </div>
+        <div class="form-group">
+          <label>POLL OPTIONS (MIN 2, MAX 6)</label>
+          <div id="poll-options-list"></div>
+          <button type="button" class="btn-add-opt" onclick="addPollOption()">+ Add Option</button>
+        </div>
       </div>
-      <div class="form-full"><label>TAGS (COMMA SEPARATED)</label><input id="q-tags" placeholder="e.g. python, coding"></div>
+
+      <div class="form-group">
+        <label>TAGS (COMMA SEPARATED)</label>
+        <input id="q-tags" placeholder="e.g. python, beginners, coding">
+      </div>
     </div>
+
     <div class="modal-footer-actions">
       <button onclick="closeModal('ask-question-modal')" class="btn-cancel">Cancel</button>
       <button onclick="submitPost()" id="submit-post-btn" class="btn-submit">Post Anonymously</button>
@@ -93,44 +110,28 @@
   </div>
 </div>
 
+<!-- Edit Post Modal (Same Styling) -->
 <div id="edit-post-modal" class="modal-overlay">
   <div class="modal-card">
-    <h2 class="modal-title">✏️ EDIT POST</h2>
     <button class="btn-close-modal" onclick="closeModal('edit-post-modal')">✕</button>
-    <div class="modal-form-grid">
-      <div class="form-full"><label>POST TITLE</label><input id="edit-q-title"></div>
-      <div class="form-full"><label>CONTENT / DESCRIPTION</label><textarea id="edit-q-content"></textarea></div>
-      <div class="form-full">
+    <h2 class="modal-title"><span>✏️</span> EDIT POST</h2>
+    <div class="modal-form-content">
+      <div class="form-group"><label>POST TITLE</label><input id="edit-q-title"></div>
+      <div class="form-group"><label>CONTENT / DESCRIPTION</label><textarea id="edit-q-content"></textarea></div>
+      <div class="form-group">
         <label>POST TYPE</label>
-        <select id="edit-q-type" onchange="togglePollSection('edit')">
-          <option value="Question">Question</option><option value="Poll">Poll</option><option value="Discussion">Discussion</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="edit-q-type" onchange="togglePollSection('edit')">
+            <option value="Question">Question</option><option value="Poll">Poll</option><option value="Discussion">Discussion</option>
+          </select>
+        </div>
       </div>
       <div id="edit-poll-section" style="display:none;"><label>POLL QUESTION</label><input id="edit-poll-question"><div id="edit-poll-options-list"></div><button onclick="addPollOption('edit')" class="btn-add-opt">+ Add Option</button></div>
-      <div class="form-full"><label>TAGS</label><input id="edit-q-tags"></div>
+      <div class="form-group"><label>TAGS</label><input id="edit-q-tags"></div>
     </div>
     <div class="modal-footer-actions">
       <button onclick="closeModal('edit-post-modal')" class="btn-cancel">Cancel</button>
       <button onclick="saveEditPost()" class="btn-save">Save Changes</button>
-    </div>
-  </div>
-</div>
-
-<div id="report-modal" class="modal-overlay">
-  <div class="modal-card">
-    <h2 class="modal-title">🚩 Report Content</h2>
-    <button class="btn-close-modal" onclick="closeModal('report-modal')">✕</button>
-    <div class="modal-body">
-      <p style="color:#aaa; margin-bottom:12px">Help us keep the platform safe.</p>
-      <select id="report-reason">
-        <option value="">Select a reason...</option>
-        <option value="spam">Spam</option><option value="inappropriate">Inappropriate</option><option value="misleading">Misleading</option><option value="harassment">Harassment</option><option value="other">Other</option>
-      </select>
-      <textarea id="report-description" placeholder="Optional details..." rows="3" style="margin-top:12px"></textarea>
-    </div>
-    <div class="modal-footer-actions">
-      <button onclick="closeModal('report-modal')" class="btn-cancel">Cancel</button>
-      <button onclick="submitReport()" class="btn-report">Submit Report</button>
     </div>
   </div>
 </div>
@@ -140,103 +141,111 @@
   .community-page-wrapper {
     padding: 32px; padding-top: 32px !important; max-width: 1200px; margin: 0 auto; box-sizing: border-box;
   }
-
   .glow-heading { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.5rem; margin: 0; display: flex; align-items: center; gap: 15px; }
   .header-subtitle { color: rgba(255,255,255,0.6); font-size: 1.1rem; margin-top: 5px; }
 
-  /* BUG 2 FIX: Filter Bar Alignment */
   .community-filter-bar {
     display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
     margin-top: 32px; padding: 16px 20px; background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; width: 100%; box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;
   }
   .filter-tabs-group { display: flex; gap: 8px; flex-wrap: wrap; }
-  .community-search-wrapper { position: relative; flex: 1; min-width: 150px; }
-  .btn-ask-question { flex-shrink: 0; }
-
-  @media (max-width: 600px) {
-    .btn-ask-question { width: 100%; }
-    .community-search-wrapper { width: 100%; order: 2; }
-    .filter-tabs-group { width: 100%; order: 1; }
-    .btn-ask-question { order: 3; }
-  }
-
   .filter-btn {
     padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
     background: transparent; color: #888; font-family: 'Rajdhani'; font-weight: 600;
     cursor: pointer; transition: 0.3s; white-space: nowrap; font-size: 13px;
   }
-  .filter-btn.active { background: #ff2a6d; color: #fff; border-color: #ff2a6d; box-shadow: 0 0 15px rgba(255,42,109,0.3); }
+  .filter-btn.active { background: #ff2a6d; color: #fff; border-color: #ff2a6d; }
 
+  .community-search-wrapper { position: relative; flex: 1; min-width: 150px; }
   .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #05d9e8; z-index: 2; }
   #community-search {
     width: 100%; background: #0a1628; border: 1px solid rgba(5,217,232,0.3);
-    border-radius: 30px; padding: 12px 20px 12px 45px; color: #fff;
-    font-family: 'Share Tech Mono'; outline: none; transition: 0.3s; box-sizing: border-box;
+    border-radius: 30px; padding: 12px 20px 12px 45px; color: #fff; outline: none; box-sizing: border-box;
   }
-  #community-search:focus { border-color: #05d9e8; box-shadow: 0 0 10px rgba(5,217,232,0.2); }
 
   .btn-ask-question {
     padding: 12px 24px; background: linear-gradient(135deg, #ff2a6d, #d4006e);
-    border: none; border-radius: 12px; color: #fff; font-weight: 700;
-    font-family: 'Rajdhani'; cursor: pointer; transition: 0.3s;
-    box-shadow: 0 4px 15px rgba(255,42,109,0.3); white-space: nowrap;
+    border: none; border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer;
   }
 
   .community-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; margin-top: 32px; }
-  
-  /* Post Card Styling */
   .post-card {
     background: #0d1b2a; border: 1px solid rgba(5,217,232,0.15);
-    border-radius: 16px; padding: 24px; margin-bottom: 24px;
-    transition: 0.3s; position: relative;
+    border-radius: 16px; padding: 24px; margin-bottom: 24px; position: relative;
   }
-  .post-card:hover { border-color: #05d9e8; transform: translateY(-2px); }
 
-  /* BUG 1 FIX: 3-Dot Dropdown */
   .post-actions-wrapper { position: absolute; top: 20px; right: 20px; }
-  .post-three-dot {
-    background: none; border: none; color: #666; cursor: pointer;
-    font-size: 24px; padding: 0 8px; border-radius: 50%; transition: 0.2s;
-    line-height: 1; display: block;
-  }
-  .post-three-dot:hover { color: #05d9e8; background: rgba(5,217,232,0.1); }
-
+  .post-three-dot { background: none; border: none; color: #666; cursor: pointer; font-size: 24px; }
   .dropdown-menu {
     position: absolute; right: 0; top: 100%; background: #152238;
     border: 1px solid rgba(5,217,232,0.3); border-radius: 12px;
-    padding: 8px 0; min-width: 180px; z-index: 1000; list-style: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; margin: 8px 0 0;
+    padding: 8px 0; min-width: 180px; z-index: 1000; list-style: none; display: none;
   }
-  .dropdown-menu.active { display: block; animation: dropdownFade 0.2s ease; }
-  @keyframes dropdownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  .dropdown-menu.active { display: block; }
+  .dropdown-menu li { padding: 10px 16px; color: #ccc; font-size: 13px; cursor: pointer; }
+  .dropdown-menu li:hover { background: rgba(5,217,232,0.15); }
 
-  .dropdown-menu li {
-    padding: 10px 16px; color: #ccc; font-size: 13px; cursor: pointer;
-    transition: 0.2s; display: flex; align-items: center; gap: 10px;
-  }
-  .dropdown-menu li:hover { background: rgba(5,217,232,0.15); color: #fff; }
-  .dropdown-menu li.danger-item { color: #ff4757; }
-  .dropdown-menu li.danger-item:hover { background: rgba(255,71,87,0.1); }
-
-  /* Reactions and Footer */
-  .sc-footer { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
-  .reaction-btn, .chat-btn {
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-    color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer;
-    font-size: 0.85rem; display: flex; align-items: center; gap: 8px; text-decoration: none;
-  }
-  .reaction-btn:hover, .chat-btn:hover { background: rgba(255,255,255,0.1); }
-
-  /* Modals */
+  /* --- MODAL BUG FIXES --- */
   .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); z-index: 9999;
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(8px); opacity: 0; transition: 0.3s;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9998;
+    display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);
   }
-  .modal-overlay.show { display: flex !important; opacity: 1 !important; }
-  .modal-card { background: #0d1b2a; border: 1px solid #05d9e8; border-radius: 20px; padding: 40px; width: 100%; max-width: 600px; position: relative; }
+  .modal-overlay.show { display: flex !important; }
+
+  .modal-card {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: min(560px, 90vw); max-height: 90vh; overflow-y: auto;
+    background: #1a1f35; border-radius: 16px; padding: 2rem; z-index: 9999;
+    box-sizing: border-box; border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-close-modal {
+    position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+    color: white; font-size: 1.25rem; cursor: pointer; line-height: 1; z-index: 10;
+  }
+
+  .modal-title {
+    display: flex; align-items: center; gap: 10px; font-size: 1.3rem;
+    font-weight: 700; margin-bottom: 1.5rem; color: white;
+  }
+
+  .form-group {
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem;
+  }
+  .form-group label {
+    display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+    color: #a0aec0; text-transform: uppercase;
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; box-sizing: border-box; background: #0d1117;
+    border: 1px solid #2d3748; border-radius: 8px; padding: 0.65rem 0.9rem;
+    color: white; font-size: 0.95rem; outline: none; transition: 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: #667eea;
+  }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+
+  .select-wrapper { position: relative; width: 100%; }
+  .select-wrapper select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+  .select-wrapper::after {
+    content: "▼"; font-size: 0.7rem; color: #a0aec0; position: absolute;
+    right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none;
+  }
+
+  .modal-footer-actions {
+    display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;
+  }
+  .btn-cancel {
+    background: transparent; border: 1px solid #4a5568; color: #a0aec0;
+    padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer; font-weight: 600;
+  }
+  .btn-submit, .btn-save {
+    background: #ff2a6d; border: none; color: white; padding: 0.6rem 1.4rem;
+    border-radius: 8px; cursor: pointer; font-weight: 600;
+  }
+  .btn-submit:hover { background: #ff4d8d; }
 
   /* Responsive Layout */
   @media (max-width: 992px) { .community-layout { grid-template-columns: 1fr; } .community-sidebar { display: none; } }
