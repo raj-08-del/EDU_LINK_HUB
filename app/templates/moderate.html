@@ -85,7 +85,7 @@
         </div>
       `).join('');
     } catch (err) {
-      container.innerHTML = '<div class="empty-state"><p>Error loading pending items</p></div>';
+      container.innerHTML = `<div class="empty-state"><p>Error loading pending items: ${escapeHtml(err.message)}</p></div>`;
     }
   }
 

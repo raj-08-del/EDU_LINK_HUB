@@ -154,14 +154,29 @@ def get_opportunities():
 def get_pending():
     try:
         user = get_current_user()
+        if not user:
+            return jsonify({'error': 'User session invalid'}), 401
+            
+        # Add safety check for database connection
+        if mongo.db is None:
+             return jsonify({'error': 'Database connection unavailable'}), 503
+
         opps = list(mongo.db.opportunities.find({'status': 'pending'}).sort('created_at', -1))
         for opp in opps:
-            creator = mongo.db.users.find_one({'_id': opp.get('created_by')}, {'name': 1, 'college': 1})
-            opp['creator'] = serialize_doc(creator) if creator else None
-            opp['is_owner'] = True if str(opp.get('created_by')) == str(user['_id']) or user['role'] == 'admin' else False
+            created_by = opp.get('created_by')
+            if created_by:
+                creator = mongo.db.users.find_one({'_id': ObjectId(created_by)}, {'name': 1, 'college': 1})
+                opp['creator'] = serialize_doc(creator) if creator else None
+            else:
+                opp['creator'] = None
+                
+            opp['is_owner'] = True if (created_by and str(created_by) == str(user['_id'])) or user.get('role') == 'admin' else False
+            
         return jsonify(serialize_doc(opps)), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f"Database error: {str(e)}"}), 500
 
 
 @opportunities_bp.route('/<opp_id>', methods=['GET'])

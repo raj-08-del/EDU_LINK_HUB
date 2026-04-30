@@ -98,7 +98,10 @@ def create_app():
                     except Exception as e:
                         app.logger.error(f"CRITICAL: MongoDB Connection Failed: {str(e)}")
                         # Do not set _indexes_created to True so it retries on next request
-                        return jsonify({"message": "Database connection is currently unavailable."}), 503
+                        return jsonify({
+                            "message": "Database connection is currently unavailable.",
+                            "debug_error": str(e)
+                        }), 503
 
     # Register blueprints
     from app.routes.auth import auth_bp
