@@ -29,17 +29,17 @@
           <div class="stat-icon">🎪</div>
           <div class="stat-value" id="a_events">0</div>
           <div class="stat-label">Events</div>
-          <div style="font-size:10px; color:var(--accent); margin-top:4px;" id="a_auto_events">🤖 0 Auto</div>
+          <div style="font-size:10px; color:#05d9e8; margin-top:4px;" id="a_auto_events">🤖 0 Auto</div>
         </div>
         <div class="stat-card" onclick="window.location.href='/opportunities'">
           <div class="stat-icon">💼</div>
           <div class="stat-value" id="a_opps">0</div>
           <div class="stat-label">Opportunities</div>
-          <div style="font-size:10px; color:var(--accent); margin-top:4px;" id="a_auto_opps">🤖 0 Auto</div>
+          <div style="font-size:10px; color:#05d9e8; margin-top:4px;" id="a_auto_opps">🤖 0 Auto</div>
         </div>
-        <div class="stat-card" style="background:rgba(255,165,0,0.05); border-color:rgba(255,165,0,0.2);" onclick="window.location.href='/moderate'">
+        <div class="stat-card" style="background:rgba(255,165,0,0.1); border-color:rgba(255,165,0,0.3);" onclick="window.location.href='/moderate'">
           <div class="stat-icon">⏳</div>
-          <div class="stat-value" id="a_pending" style="color:orange;">0</div>
+          <div class="stat-value" id="a_pending" style="color:#ffb703;">0</div>
           <div class="stat-label">Pending Review</div>
         </div>
       </div>
@@ -269,6 +269,54 @@
 </div>
 
 <style>
+  /* --- Stats Matrix Styling --- */
+  .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px;
+    margin-bottom: 32px;
+    width: 100%;
+  }
+
+  .stat-card {
+    background: rgba(15, 10, 30, 0.6) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-8px);
+    background: rgba(180, 81, 252, 0.1) !important;
+    border-color: rgba(180, 81, 252, 0.4) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  .stat-icon { font-size: 32px; margin-bottom: 12px; }
+  .stat-value { font-size: 30px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 11px; color: #6a9ab5; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; opacity: 0.8; }
+
+  @media (max-width: 1200px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr !important; }
+    .stat-card { min-height: 120px; padding: 20px !important; }
+  }
+
   .admin-section { animation: fadeIn 0.5s ease; }
   .admin-card-detailed {
     background: rgba(15, 10, 30, 0.4);
