@@ -47,7 +47,13 @@ def get_events():
             ]
 
         sort_order = [('date', 1)] if sort == 'oldest' else [('date', -1)]
-        events = list(mongo.db.events.find(query).sort(sort_order))
+        limit = request.args.get('limit', type=int)
+        
+        cursor = mongo.db.events.find(query).sort(sort_order)
+        if limit:
+            cursor = cursor.limit(limit)
+        
+        events = list(cursor)
 
         # Reactions fetch
         user_likes = []

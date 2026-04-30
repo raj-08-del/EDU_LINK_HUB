@@ -421,8 +421,8 @@
   async function loadFeeds() {
     try {
       const [events, opps] = await Promise.all([
-        apiFetch('/api/events?sort=newest'),
-        apiFetch('/api/opportunities?sort=newest')
+        apiFetch('/api/events?sort=newest&limit=3'),
+        apiFetch('/api/opportunities?sort=newest&limit=4')
       ]);
 
       const evContainer = document.getElementById('recentEvents');

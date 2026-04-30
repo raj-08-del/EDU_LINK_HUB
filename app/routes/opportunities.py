@@ -97,7 +97,13 @@ def get_opportunities():
         if type_filter:
             query['opportunity_type'] = type_filter
 
-        opps = list(mongo.db.opportunities.find(query).sort('created_at', -1))
+        limit = request.args.get('limit', type=int)
+        
+        cursor = mongo.db.opportunities.find(query).sort('created_at', -1)
+        if limit:
+            cursor = cursor.limit(limit)
+            
+        opps = list(cursor)
 
         # Batch status fetch
         user_statuses = {}

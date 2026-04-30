@@ -163,17 +163,12 @@ async function apiFetch(url, options = {}) {
   } catch(e) {
     clearTimeout(timeoutId);
     if (e.name === 'AbortError') {
-      console.error('[apiFetch] ERROR: Request timed out');
-      return { 
-        error: `Request timed out after ${timeout/1000}s. Please check your connection.` 
-      };
+      const msg = `Request timed out after ${timeout/1000}s. The server or tunnel may be slow or unavailable.`;
+      console.error('[apiFetch] ERROR:', msg);
+      throw new Error(msg);
     }
     console.error('[apiFetch] EXCEPTION:', e);
-    console.error('[apiFetch] URL was:', url);
-    // Return error object instead of throwing
-    return { 
-      error: 'Network error: ' + e.message 
-    };
+    throw new Error('Network error: ' + e.message);
   }
 }
 
