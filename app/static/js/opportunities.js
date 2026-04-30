@@ -393,4 +393,51 @@ window.showSkeletons = function(containerId, count = 6) {
     container.innerHTML = html;
 };
 
+// ── Manual Post Submission ─────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const manualForm = document.getElementById('manualOppForm');
+    if (manualForm) {
+        manualForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitOppBtn');
+            const originalText = btn.textContent;
+            btn.textContent = '🚀 Submitting...';
+            btn.disabled = true;
+
+            const formData = new FormData(manualForm);
+            
+            try {
+                const res = await fetch('/api/opportunities/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (window.showToast) window.showToast('✅ Opportunity submitted for review!', 'success');
+                    else if (window.showOppToast) window.showOppToast('✅ Submitted for review!');
+                    
+                    manualForm.reset();
+                    if (window.closeOppModal) window.closeOppModal();
+                    
+                    // Refresh feed or redirect
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to submit'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error. Please try again.');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+});
+
 console.log('✅ opportunities.js loaded successfully');

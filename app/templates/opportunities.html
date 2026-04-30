@@ -2,15 +2,66 @@
 {% block title %}Find Your Next Opportunity - EDU Link Hub{% endblock %}
 
 {% block head %}
-<!-- Link to redesigned styles -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/opportunities.css') }}">
 <meta name="description" content="Discover jobs, internships, hackathons and events from top platforms like Adzuna, Remotive, Devpost and more.">
 <meta name="is-admin" content="{{ 'true' if is_admin else 'false' }}">
+<style>
+    /* Manual Post Button Styling */
+    .btn-manual-post {
+        background: linear-gradient(135deg, #6c63ff, #3f3d56);
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-family: 'Rajdhani', sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        margin-left: auto;
+        white-space: nowrap;
+    }
+    .btn-manual-post:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        filter: brightness(1.1);
+    }
+    @media (max-width: 768px) {
+        .sticky-filter-wrapper { flex-direction: column; gap: 15px; align-items: stretch; }
+        .btn-manual-post { margin-left: 0; justify-content: center; width: 100%; }
+    }
+
+    /* Modal Styling specific to Opportunities */
+    .opp-modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999;
+        display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+    }
+    .opp-modal-card {
+        background: #1a1a2e; border: 1px solid rgba(108,99,255,0.3);
+        border-radius: 20px; padding: 30px; width: 100%; max-width: 600px;
+        position: relative; animation: modalSlideUp 0.4s ease; max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes modalSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .opp-modal-title { font-family: 'Rajdhani', sans-serif; color: #fff; margin-bottom: 25px; font-size: 1.8rem; display: flex; align-items: center; gap: 12px; }
+    .opp-form-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+    .opp-form-group label { color: #aaa; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .opp-form-group input, .opp-form-group textarea, .opp-form-group select {
+        background: #0d0d1a; border: 1px solid rgba(108,99,255,0.2); border-radius: 10px;
+        padding: 12px 15px; color: #fff; font-family: inherit; outline: none; transition: 0.3s;
+    }
+    .opp-form-group input:focus, .opp-form-group textarea:focus { border-color: #6c63ff; box-shadow: 0 0 10px rgba(108,99,255,0.2); }
+    .opp-modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
+    .btn-opp-cancel { background: transparent; border: 1px solid #444; color: #888; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    .btn-opp-submit { background: #6c63ff; border: none; color: #fff; font-weight: 700; padding: 10px 25px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .btn-opp-submit:hover { background: #5a52e0; }
+</style>
 {% endblock %}
 
 {% block body %}
 <script>
-    // Ensure body dataset for admin access matches user requirement
     const adminVal = "{{ 'true' if is_admin else 'false' }}";
     document.body.dataset.isAdmin = adminVal;
     document.body.setAttribute('data-is-admin', adminVal);
@@ -23,24 +74,27 @@
     {% include "partials/navbar.html" %}
     
     <div class="page-content">
-      <!-- Animated Header -->
       <header class="animated-header">
         <h1 id="pageTitle">Find Your Next Opportunity</h1>
         <p class="header-subtitle" style="color: var(--text-muted); margin-top: 10px;">Curated jobs, internships, and hackathons from across the web.</p>
       </header>
 
-      <!-- Sticky Filter Bar -->
-      <div class="sticky-filter-wrapper">
-        <div class="filter-bar-pill">
+      <div class="sticky-filter-wrapper" style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <div class="filter-bar-pill" style="margin-bottom: 0;">
           <a href="/opportunities" class="filter-pill {{ 'active' if not request.args.get('category') }}">All</a>
           <a href="/opportunities?category=job" class="filter-pill {{ 'active' if request.args.get('category') == 'job' }}">Jobs</a>
           <a href="/opportunities?category=internship" class="filter-pill {{ 'active' if request.args.get('category') == 'internship' }}">Internships</a>
           <a href="/opportunities?category=campus-placement" class="filter-pill {{ 'active' if request.args.get('category') == 'campus-placement' }}">Campus</a>
           <a href="/opportunities?category=skill-based" class="filter-pill {{ 'active' if request.args.get('category') == 'skill-based' }}">Skill Based</a>
         </div>
+
+        {% if current_user %}
+        <button class="btn-manual-post" onclick="openOppModal()">
+          <span>➕</span> Post Opportunity
+        </button>
+        {% endif %}
       </div>
 
-      <!-- Main Feed -->
       <div class="opportunities-feed" id="oppsGrid">
         {% if not opportunities %}
           <div class="empty-state">
@@ -65,46 +119,22 @@
                     {% endif %}
                     <div class="letter-avatar" {{ 'style="display:none;"' if opp.image else '' }}>{{ (opp.company|first|upper) if opp.company else '?' }}</div>
                     
-                    <!-- NEW BANNER TOP RIGHT DESIGN -->
                     <div style="position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:6px;z-index:50;">
-                      
-                      <!-- Source badge -->
-                      <span style="background:rgba(0,0,0,0.5);color:#aaa;
-                                   font-size:11px;padding:3px 8px;border-radius:20px;
-                                   display:flex;align-items:center;gap:4px;">
-                        {% if (opp.source|lower) == 'adzuna' %}🔍
-                        {% elif (opp.source|lower) == 'remotive' %}🌐
-                        {% elif (opp.source|lower) == 'themuse' %}🎨
-                        {% elif (opp.source|lower) == 'jobicy' %}💼
-                        {% elif (opp.source|lower) == 'devpost' %}💻
-                        {% elif (opp.source|lower) == 'mlh' %}⚡
-                        {% elif (opp.source|lower) == 'eventbrite' %}🎟️
-                        {% elif (opp.source|lower) == 'internshala' %}🎓
-                        {% elif (opp.source|lower) == 'unstop' %}🏆
+                      <span style="background:rgba(0,0,0,0.5);color:#aaa;font-size:11px;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;">
+                        {% set source = opp.source|lower if opp.source else 'direct' %}
+                        {% if source == 'adzuna' %}🔍
+                        {% elif source == 'remotive' %}🌐
+                        {% elif source == 'themuse' %}🎨
+                        {% elif source == 'jobicy' %}💼
+                        {% elif source == 'devpost' %}💻
+                        {% elif source == 'mlh' %}⚡
+                        {% elif source == 'eventbrite' %}🎟️
+                        {% elif source == 'internshala' %}🎓
+                        {% elif source == 'unstop' %}🏆
                         {% else %}💼{% endif %}
                         via {{ opp.source or 'Direct' }}
                       </span>
-
-                      <!-- THREE DOT BUTTON — inline onclick, no external listener needed -->
-                      <button 
-                        onclick="handleThreeDot(event, this)"
-                        data-id="{{ opp._id }}"
-                        data-source="{{ opp.source or '' }}"
-                        title="More options"
-                        style="background:rgba(255,255,255,0.12);
-                               border:1px solid rgba(255,255,255,0.25);
-                               color:#fff;
-                               width:28px;height:28px;
-                               border-radius:50%;
-                               cursor:pointer;
-                               font-size:18px;
-                               font-weight:bold;
-                               display:flex;align-items:center;justify-content:center;
-                               line-height:1;
-                               flex-shrink:0;
-                               z-index:50;
-                               position:relative;
-                               padding:0;">&#8942;</button>
+                      <button onclick="handleThreeDot(event, this)" data-id="{{ opp._id }}" data-source="{{ opp.source or '' }}" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;z-index:50;position:relative;padding:0;">&#8942;</button>
                     </div>
 
                     <div class="type-badge">{{ (opp.opportunity_type or opp.category or 'Job')|upper }}</div>
@@ -114,25 +144,17 @@
                 <div class="opp-card-body">
                     <div class="company-name">{{ opp.company }}</div>
                     <h2 class="opp-title" title="{{ opp.role }}">{{ opp.role }}</h2>
-                    
                     <div class="opp-meta-row">
                         <div class="opp-meta-item">🗓️ {{ opp.deadline or 'N/A' }}</div>
                         <div class="opp-meta-item">🎓 {{ opp.eligibility or 'Any' }}</div>
                     </div>
-
                     <div class="tag-pills">
-                        {% for tag in opp.tags %}
-                        <span class="tag-pill">#{{ tag }}</span>
-                        {% endfor %}
+                        {% for tag in opp.tags %}<span class="tag-pill">#{{ tag }}</span>{% endfor %}
                     </div>
-
                     <p class="opp-desc">{{ opp.description or 'No description provided.' }}</p>
-
                     <div class="opp-action-row">
                         <div class="action-likes {{ 'active' if opp.has_liked }}" onclick="reactToOpportunity('{{ opp._id }}', this)">
-                            <span class="emoji">👍</span> 
-                            <span class="count" id="count-{{ opp._id }}">{{ opp.total_reactions or 0 }}</span>
-                            <span>LIKES</span>
+                            <span class="emoji">👍</span> <span class="count" id="count-{{ opp._id }}">{{ opp.total_reactions or 0 }}</span> <span>LIKES</span>
                         </div>
                         <div class="action-buttons">
                             <a href="/opportunities/{{ opp._id }}" class="btn-opp btn-details">Details</a>
@@ -145,12 +167,82 @@
           {% endfor %}
         {% endif %}
       </div>
-
     </div>
   </div>
 </div>
 
-{% include "partials/modals/opportunity_modals.html" ignore missing %}
+<!-- Modal for Manual Opportunity Posting -->
+<div class="opp-modal-overlay" id="manualOppModal">
+    <div class="opp-modal-card">
+        <div class="opp-modal-title"><span>🚀</span> Post Opportunity</div>
+        <p style="color: #888; font-size: 0.85rem; margin-top: -15px; margin-bottom: 20px;">Share career paths with your community. All posts are reviewed by moderators.</p>
+        
+        <form id="manualOppForm" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="opp-form-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="company" required placeholder="e.g. Google, Startup Inc">
+                </div>
+                <div class="opp-form-group">
+                    <label>Job Role / Title *</label>
+                    <input type="text" name="role" required placeholder="e.g. Frontend Developer">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="opp-form-group">
+                    <label>Category *</label>
+                    <select name="category" required>
+                        <option value="job">Job</option>
+                        <option value="internship">Internship</option>
+                        <option value="campus-placement">Campus Placement</option>
+                        <option value="skill-based">Skill Based</option>
+                    </select>
+                </div>
+                <div class="opp-form-group">
+                    <label>Location *</label>
+                    <input type="text" name="location" required placeholder="e.g. Remote, Bangalore">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="opp-form-group">
+                    <label>Eligibility *</label>
+                    <input type="text" name="eligibility" required placeholder="e.g. B.Tech 2024, Anyone">
+                </div>
+                <div class="opp-form-group">
+                    <label>Deadline *</label>
+                    <input type="date" name="deadline" required>
+                </div>
+            </div>
+
+            <div class="opp-form-group">
+                <label>Application Link *</label>
+                <input type="url" name="applyLink" required placeholder="https://company.com/apply">
+            </div>
+
+            <div class="opp-form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" placeholder="Briefly describe the role..."></textarea>
+            </div>
+
+            <div class="opp-form-group">
+                <label>Tags (Comma separated)</label>
+                <input type="text" name="tags" placeholder="python, react, remote">
+            </div>
+
+            <div class="opp-form-group">
+                <label>Company Logo / Image</label>
+                <input type="file" name="image" accept="image/*">
+            </div>
+
+            <div class="opp-modal-footer">
+                <button type="button" class="btn-opp-cancel" onclick="closeOppModal()">Cancel</button>
+                <button type="submit" class="btn-opp-submit" id="submitOppBtn">Submit Post</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -158,6 +250,13 @@
 <script>
     const currentUserId = "{{ current_user._id|string if current_user else '' }}";
     const currentUserRole = "{{ current_user.role|lower if current_user else '' }}";
+    
+    function openOppModal() {
+        document.getElementById('manualOppModal').style.display = 'flex';
+    }
+    function closeOppModal() {
+        document.getElementById('manualOppModal').style.display = 'none';
+    }
 </script>
 <script src="/static/js/opportunities.js?v={{ range(1, 9999) | random }}"></script>
 {% endblock %}
