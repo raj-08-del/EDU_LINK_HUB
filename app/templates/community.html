@@ -7,9 +7,9 @@
   {% include "partials/sidebar.html" %}
   <div class="main-content">
     {% include "partials/navbar.html" %}
-    <div class="page-content community-page-wrapper">
+    <div class="page-content community-page-wrapper" style="padding-top: 30px; box-sizing: border-box;">
       <!-- HEADER -->
-      <div class="page-header community-header" style="margin-bottom: 24px;">
+      <div class="page-header community-header" style="margin-bottom: 32px; padding-top: 10px;">
         <div class="header-title-wrapper" style="margin-bottom: 24px;">
           <h1 class="glow-heading">
             <span class="emoji-icon">💬</span>
@@ -18,37 +18,35 @@
           <p class="header-subtitle" style="color:rgba(255,255,255,0.7);font-size:1.1rem;">Ask questions anonymously and help peers</p>
         </div>
         
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div class="community-filter-bar" style="display:flex; justify-content:space-between; align-items:center; gap:16px; width:100%; box-sizing:border-box;">
           <!-- Left: filter tabs -->
-          <div style="display:flex; gap:8px;">
-            <button id="btn-newest" onclick="setSort('newest')"
+          <div class="filter-tabs-group" style="display:flex; gap:8px; flex-shrink:0;">
+            <button id="btn-newest" class="filter-btn active" onclick="setSort('newest')"
               style="padding:8px 20px; border-radius:20px; border:1px solid #ff2a6d;
               background:#ff2a6d; color:#fff; font-size:13px; font-weight:700;
-              cursor:pointer; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em;">
+              cursor:pointer; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em; white-space:nowrap;">
               🟢 Newest
             </button>
-            <button id="btn-popular" onclick="setSort('popular')"
+            <button id="btn-popular" class="filter-btn" onclick="setSort('popular')"
               style="padding:8px 20px; border-radius:20px; border:1px solid #444;
               background:transparent; color:#888; font-size:13px; font-weight:600;
-              cursor:pointer; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em;">
+              cursor:pointer; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em; white-space:nowrap;">
               🔥 Popular
             </button>
-            <button onclick="window.location.href='/community/channel/general'"
+            <button class="filter-btn" onclick="window.location.href='/community/channel/general'"
               style="padding:9px 18px; background:transparent;
               border:1px solid #05d9e8; border-radius:20px;
               color:#05d9e8; font-size:13px; font-weight:600;
               cursor:pointer; font-family:'Rajdhani',sans-serif;
               letter-spacing:0.05em; display:flex; align-items:center; gap:6px;
-              transition:all 0.2s; white-space:nowrap;"
-              onmouseover="this.style.background='rgba(5,217,232,0.1)'; this.style.boxShadow='0 0 10px rgba(5,217,232,0.3)'"
-              onmouseout="this.style.background='transparent'; this.style.boxShadow='none'">
+              transition:all 0.2s; white-space:nowrap;">
               💬 Chat Channels
             </button>
           </div>
           
           <!-- Right: search + ask button -->
-          <div style="display:flex; gap:12px; align-items:center;">
-            <div style="position:relative; width:280px;">
+          <div class="filter-actions-group" style="display:flex; gap:12px; align-items:center; flex:1; justify-content:flex-end; min-width:0;">
+            <div class="community-search-wrapper" style="position:relative; flex:1; max-width:400px; min-width:150px;">
               <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%);
                 color:#05d9e8; font-size:14px; pointer-events:none;">🔍</span>
               <input type="text" id="community-search" placeholder="Search posts, topics, tags..."
@@ -56,16 +54,14 @@
                 style="width:100%; background:#0a1628; border:1px solid #05d9e8;
                 border-radius:24px; padding:9px 16px 9px 36px; color:#fff;
                 font-family:'Share Tech Mono',monospace; font-size:13px;
-                outline:none; box-sizing:border-box; transition:border-color 0.2s;"
-                onfocus="this.style.borderColor='#ff2a6d'; this.style.boxShadow='0 0 8px rgba(255,42,109,0.3)'"
-                onblur="this.style.borderColor='#05d9e8'; this.style.boxShadow='none'">
+                outline:none; box-sizing:border-box; transition:border-color 0.2s;">
             </div>
             
-            <button onclick="openModal('ask-question-modal')"
-              style="padding:9px 20px; background:linear-gradient(135deg,#ff2a6d,#d4006e);
+            <button class="btn-ask-question" onclick="openModal('ask-question-modal')"
+              style="padding:10px 24px; background:linear-gradient(135deg,#ff2a6d,#d4006e);
               border:none; border-radius:10px; color:#fff; font-weight:700; font-size:14px;
               cursor:pointer; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em;
-              white-space:nowrap;">
+              white-space:nowrap; flex-shrink:0; box-shadow: 0 0 15px rgba(255,42,109,0.3);">
               + ASK QUESTION
             </button>
           </div>
@@ -73,32 +69,26 @@
       </div>
 
       <!-- LAYOUT GRID -->
-      <div class="community-layout">
-        <!-- LEFT: POSTS (70%) -->
-        <div class="community-main">
-          <div id="posts-container">
+      <div class="community-layout" style="display: grid; grid-template-columns: 1fr 300px; gap: 24px; width: 100%; box-sizing: border-box;">
+        <!-- LEFT: POSTS (Main Content) -->
+        <div class="community-main" style="width: 100%; min-width: 0;">
+          <div id="posts-container" style="width: 100%;">
             <!-- Shimmer/Skeletons load here initially -->
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
           </div>
           <!-- Pagination -->
-          <div class="pagination-container" id="pagination" style="display:none; margin-top:20px;">
+          <div class="pagination-container" id="pagination" style="display:none; margin-top:20px; justify-content: center; gap: 20px;">
             <button class="btn btn-soft" id="prevPage" onclick="changePage(-1)">← Previous</button>
             <span id="pageInfo" style="color: rgba(255,255,255,0.5); font-size: 14px; align-self: center;"></span>
             <button class="btn btn-soft" id="nextPage" onclick="changePage(1)">Next →</button>
           </div>
         </div>
         
-        <!-- RIGHT: SIDEBAR (30%) -->
-        <div class="community-sidebar">
-          
-
-          
-
-          
-
-          
+        <!-- RIGHT: SIDEBAR -->
+        <div class="community-sidebar" style="width: 100%;">
+          <!-- Widgets will go here -->
         </div>
       </div>
     </div>
@@ -421,11 +411,7 @@
     const formattedDate = new Date(post.created_at).toLocaleDateString();
 
     return `
-      <div class="post-card" data-post-id="${postId}" style="background:#0d1b2a; border:1px solid rgba(5,217,232,0.15);
-        border-radius:14px; padding:20px 24px; margin-bottom:16px;
-        transition:border-color 0.2s; position:relative;"
-        onmouseover="this.style.borderColor='rgba(5,217,232,0.4)'"
-        onmouseout="this.style.borderColor='rgba(5,217,232,0.15)'">
+      <div class="post-card" data-post-id="${postId}">
 
         <!-- Top row: type badge + three dot -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
