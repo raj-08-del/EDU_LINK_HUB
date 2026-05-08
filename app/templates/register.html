@@ -226,10 +226,14 @@
         }),
       });
 
-      if (data) {
+      if (data && data.user && !data.error) {
         setAuth(data.user);
         showToast('Account created securely!', 'success');
         setTimeout(() => window.location.href = '/dashboard', 500);
+      } else {
+        showToast(data?.message || data?.error || 'Registration failed', 'error');
+        btn.textContent = 'Create Account';
+        btn.disabled = false;
       }
     } catch (err) {
       showToast(err.message, 'error');

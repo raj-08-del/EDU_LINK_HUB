@@ -313,12 +313,12 @@
         }),
       });
 
-      if (data && !data.error) {
+      if (data && data.user && !data.error) {
         setAuth(data.user);
         showToast('Welcome back to the portal!', 'success');
         setTimeout(() => window.location.href = '/dashboard', 600);
       } else {
-        showToast(data?.message || 'Login failed', 'error');
+        showToast(data?.message || data?.error || 'Login failed', 'error');
         btn.textContent = originalText;
         btn.disabled = false;
       }
@@ -381,7 +381,7 @@
         errDiv.style.display = 'block';
       }
     } catch(e) {
-      errDiv.textContent = 'Network error. Try again.';
+      errDiv.textContent = e.message || 'Network error. Try again.';
       errDiv.style.display = 'block';
     } finally {
       btn.disabled = false;
