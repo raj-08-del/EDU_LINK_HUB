@@ -2,6 +2,9 @@
 {% block title %}Community Q&A - EDU Link Hub{% endblock %}
 {% block page_title %}💬 Community Q&A{% endblock %}
 
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/community.css') }}">
+{% endblock %}
 {% block body %}
 <div class="app-layout">
   {% include "partials/sidebar.html" %}
