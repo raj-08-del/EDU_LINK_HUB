@@ -230,15 +230,15 @@ function renderPostCard(post, authUserId) {
         ` : ''}
 
         <div class="sc-footer" style="display: flex !important; flex-direction: row !important; align-items: center !important; flex-wrap: wrap; gap: 8px; margin-top: 0.75rem;">
-          <button onclick="reactToPost('${postId}', this)" class="reaction-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;">
+          <button onclick="reactToPost('${postId}', this)" class="reaction-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,0.08); color: #f6c90e; border: 1px solid rgba(246,201,14,0.3); cursor: pointer; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;">
             👍 <span id="reaction-count-${postId}">${post.total_reactions || 0}</span>
           </button>
 
-          <a href="/community/channel/general?prefill=Discussing%3A%20${encodeURIComponent(post.title)}%20-%20" class="chat-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; background: rgba(255,255,255,0.08); color: white; text-decoration: none; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;">
+          <a href="/community/channel/general?prefill=Discussing%3A%20${encodeURIComponent(post.title)}%20-%20" class="chat-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.1); text-decoration: none; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;">
             💬 Chat
           </a>
 
-          <button onclick="location.href='/community/${postId}'" class="reaction-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;">
+          <button onclick="location.href='/community/${postId}'" class="reaction-btn" style="display: inline-flex !important; width: auto !important; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,0.08); color: #a0aec0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; white-space: nowrap; flex-shrink: 0; cursor: pointer;">
             🗨️ ${post.reply_count || 0} Replies
           </button>
 
